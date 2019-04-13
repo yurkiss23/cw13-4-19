@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WpfApp1.Entites;
+using WpfApp1.Models;
 
 namespace WpfApp1
 {
@@ -21,6 +22,8 @@ namespace WpfApp1
     /// </summary>
     public partial class CRUDWindow : Window
     {
+        private EFContext _context;
+
         private static List<User> _users = new List<User>
         {
             new User{Id=1,FirstName="q",LastName="w",Email="q@gmail.com",Password="123456"},
@@ -28,21 +31,37 @@ namespace WpfApp1
         };
         private void updateDT()
         {
+            List<UserModel> userList = _context
+                .Users.Select(u => new UserModel
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Password = u.Password
+                }).ToList();
+
             DataTable dt = new DataTable();
 
             DataColumn id = new DataColumn("id", typeof(int));
             //id.Caption = "hello";
             DataColumn firstname = new DataColumn("firstname", typeof(string));
             DataColumn lastname = new DataColumn("lastname", typeof(string));
+            DataColumn email = new DataColumn("email", typeof(string));
+            DataColumn password = new DataColumn("password", typeof(string));
             dt.Columns.Add(id);
             dt.Columns.Add(firstname);
             dt.Columns.Add(lastname);
-            foreach(var user in _users)
+            dt.Columns.Add(email);
+            dt.Columns.Add(password);
+            foreach (var user in userList)
             {
                 DataRow row = dt.NewRow();
                 row[0] = user.Id;
                 row[1] = user.FirstName;
                 row[2] = user.LastName;
+                row[3] = user.Email;
+                row[4] = user.Password;
                 dt.Rows.Add(row);
             }
 
@@ -52,6 +71,7 @@ namespace WpfApp1
         public CRUDWindow()
         {
             InitializeComponent();
+            _context = new EFContext();
         }
 
         private void MyDT_Loaded(object sender, RoutedEventArgs e)
@@ -62,19 +82,31 @@ namespace WpfApp1
 
         private void Add_btn_Click(object sender, RoutedEventArgs e)
         {
-            _users.Add(new User
+            _context.Users.Add(new User
             {
-                Id = int.Parse(user_id_txtbx.Text),
                 FirstName = firstname_txtbx.Text,
                 LastName = lastname_txtbx.Text,
                 Email = email_txtbx.Text,
                 Password = password_txtbx.Text
             });
+            _context.SaveChanges();
+            //_users.Add(new User
+            //{
+            //    Id = int.Parse(user_id_txtbx.Text),
+            //    FirstName = firstname_txtbx.Text,
+            //    LastName = lastname_txtbx.Text,
+            //    Email = email_txtbx.Text,
+            //    Password = password_txtbx.Text
+            //});
             updateDT();
+
+            email_txtbx.Text = "";
+            firstname_txtbx.Text = "";
+            lastname_txtbx.Text = "";
+            password_txtbx.Text = "";
 
             add_btn.IsEnabled = false;
             update_btn.IsEnabled = true;
-            delete_btn.IsEnabled = true;
         }
 
         private void MyDT_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -95,7 +127,11 @@ namespace WpfApp1
 
         private void Update_btn_Click(object sender, RoutedEventArgs e)
         {
-            for(int i = 0; i < _users.Count; i++)
+            
+
+            updateDT();
+
+            for (int i = 0; i < _users.Count; i++)
             {
                 if (_users[i].Id == int.Parse(user_id_txtbx.Text))
                 {
@@ -122,6 +158,26 @@ namespace WpfApp1
             add_btn.IsEnabled = false;
             update_btn.IsEnabled = true;
             delete_btn.IsEnabled = true;
+        }
+
+        private void Lastname_txtbx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            add_btn.IsEnabled = true;
+        }
+
+        private void Firstname_txtbx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            add_btn.IsEnabled = true;
+        }
+
+        private void Email_txtbx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            add_btn.IsEnabled = true;
+        }
+
+        private void Password_txtbx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            add_btn.IsEnabled = true;
         }
     }
 }
