@@ -118,6 +118,8 @@ namespace WpfApp1
                 user_id_txtbx.Text = dr["id"].ToString();
                 firstname_txtbx.Text = dr["firstname"].ToString();
                 lastname_txtbx.Text = dr["lastname"].ToString();
+                email_txtbx.Text = dr["email"].ToString();
+                password_txtbx.Text = dr["password"].ToString();
 
                 add_btn.IsEnabled = false;
                 update_btn.IsEnabled = true;
@@ -127,23 +129,37 @@ namespace WpfApp1
 
         private void Update_btn_Click(object sender, RoutedEventArgs e)
         {
-            
 
-            updateDT();
+            User upd = null;
 
-            for (int i = 0; i < _users.Count; i++)
+            try
             {
-                if (_users[i].Id == int.Parse(user_id_txtbx.Text))
-                {
-                    _users[i].FirstName = firstname_txtbx.Text;
-                    _users[i].LastName = lastname_txtbx.Text;
-                    _users[i].Email = email_txtbx.Text;
-                    _users[i].Password = password_txtbx.Text;
+                upd = _context.Users.Where(u => u.Id.ToString() == user_id_txtbx.Text).First();
+                
+                upd.FirstName = firstname_txtbx.Text;
+                upd.LastName = lastname_txtbx.Text;
+                upd.Email = email_txtbx.Text;
+                upd.Password = password_txtbx.Text;
+                _context.SaveChanges();
 
-                    updateDT();
-                    break;
-                }
+                user_id_txtbx.Text = "";
+                email_txtbx.Text = "";
+                firstname_txtbx.Text = "";
+                lastname_txtbx.Text = "";
+                password_txtbx.Text = "";
+
+                myDT.DataContext = null;
+                MyDT_Loaded(sender, e);
             }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+            updateDT();
+            add_btn.IsEnabled = false;
+            delete_btn.IsEnabled = false;
+            update_btn.IsEnabled = false;
         }
 
         private void Resete_btn_Click(object sender, RoutedEventArgs e)
