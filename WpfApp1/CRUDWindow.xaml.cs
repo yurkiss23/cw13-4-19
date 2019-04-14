@@ -162,18 +162,51 @@ namespace WpfApp1
             update_btn.IsEnabled = false;
         }
 
+        private void Delete_btn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _context.Users.Remove(_context.Users.Where(u => u.Id.ToString() == user_id_txtbx.Text).First());
+                _context.SaveChanges();
+
+                user_id_txtbx.Text = "";
+                email_txtbx.Text = "";
+                firstname_txtbx.Text = "";
+                lastname_txtbx.Text = "";
+                password_txtbx.Text = "";
+
+                myDT.DataContext = null;
+                MyDT_Loaded(sender, e);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            updateDT();
+            add_btn.IsEnabled = false;
+            delete_btn.IsEnabled = false;
+            update_btn.IsEnabled = false;
+        }
+
         private void Resete_btn_Click(object sender, RoutedEventArgs e)
         {
-            user_id_txtbx.Text = "";
-            email_txtbx.Text = "";
-            firstname_txtbx.Text = "";
-            lastname_txtbx.Text = "";
-            password_txtbx.Text = "";
-            //updateDT();
+            try
+            {
+
+                _context.Users.RemoveRange(_context.Users.Where(u => u.Id.ToString() != null));
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            updateDT();
 
             add_btn.IsEnabled = false;
-            update_btn.IsEnabled = true;
-            delete_btn.IsEnabled = true;
+            update_btn.IsEnabled = false;
+            delete_btn.IsEnabled = false;
         }
 
         private void Lastname_txtbx_TextChanged(object sender, TextChangedEventArgs e)
