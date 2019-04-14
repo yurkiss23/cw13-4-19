@@ -24,11 +24,6 @@ namespace WpfApp1
     {
         private EFContext _context;
 
-        private static List<User> _users = new List<User>
-        {
-            new User{Id=1,FirstName="q",LastName="w",Email="q@gmail.com",Password="123456"},
-            new User{Id=2,FirstName="a",LastName="s",Email="a@gmail.com",Password="456789"}
-        };
         private void updateDT()
         {
             List<UserModel> userList = _context
@@ -77,7 +72,6 @@ namespace WpfApp1
         private void MyDT_Loaded(object sender, RoutedEventArgs e)
         {
             updateDT();
-            //delete_btn.IsEnabled = false;
         }
 
         private void Add_btn_Click(object sender, RoutedEventArgs e)
@@ -90,14 +84,6 @@ namespace WpfApp1
                 Password = password_txtbx.Text
             });
             _context.SaveChanges();
-            //_users.Add(new User
-            //{
-            //    Id = int.Parse(user_id_txtbx.Text),
-            //    FirstName = firstname_txtbx.Text,
-            //    LastName = lastname_txtbx.Text,
-            //    Email = email_txtbx.Text,
-            //    Password = password_txtbx.Text
-            //});
             updateDT();
 
             email_txtbx.Text = "";
